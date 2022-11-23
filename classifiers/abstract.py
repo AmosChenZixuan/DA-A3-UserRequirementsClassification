@@ -41,13 +41,13 @@ class BaseClassifier(ABC):
     def predict(self, X):
         return self.clf.predict(X)
 
-    def grid_search(self, clf, grid, cv=10, scoring='accuracy'):
+    def grid_search(self, clf, grid, cv=3, scoring='accuracy'):
         return GridSearchCV(clf, grid, \
                 cv=StratifiedKFold(cv), \
                 scoring=scoring, return_train_score=True, \
                 n_jobs=-1)
 
-    def random_search(self, clf, grid, cv=10, scoring='accuracy', n_iter=100):
+    def random_search(self, clf, grid, cv=3, scoring='accuracy', n_iter=100):
         return RandomizedSearchCV(clf, grid, \
                 cv=StratifiedKFold(cv), \
                 scoring=scoring, return_train_score=True, \
