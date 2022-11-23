@@ -7,6 +7,7 @@ from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
 
 from .text_processor import TextProcessor as tp
+from .vectorize import Vectorizer as vec
 from config import SEED, SPLIT
 
 
@@ -35,6 +36,14 @@ class DataLoader:
         X_train, X_test, y_train, y_test = \
             train_test_split(df[self.feature_names], df[self.label_name], \
                             test_size=SPLIT, random_state=SEED)
+
+        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col])
+        # replace text col with vectorized features
+        X_train[self.text_col] = train_vectorized_text
+        X_test[self.text_col] = test_vectorized_text
+        # convert feature dataframe to numpy and flatten to 1-d array
+        X_train = X_train.to_numpy()
+        X_test = X_test.to_numpy()
         self.datasets = X_train, X_test, y_train, y_test
 
     def preprocess(self, df):
@@ -46,7 +55,7 @@ class DataLoader:
     def feature_preprocess(self, df):
         df = self.drop_duplicates(df)
         df = self.drop_negatives(df)
-        df = tp.preprocess_pipeline(df, 'comment')
+        df = tp.preprocess_pipeline(df, self.text_col)
         # TODO: other features
         return df
 
@@ -118,6 +127,14 @@ class DataLoader:
     @property
     def feature_names(self):
         return self.FIELDS[:-1]
+
+    @property
+    def text_col(self):
+        return self.feature_names[0]
+    
+    @property
+    def other_col(self):
+        return self.feature_names[1:]
 
     @property
     def label_name(self):
