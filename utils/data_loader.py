@@ -13,7 +13,11 @@ from config import SEED, SPLIT
 
 class DataLoader:
     DIR_NAME = 'json/'
-    FIELDS = ['comment', 'label']
+    FIELDS = ['comment', \
+        'rating', 'past', 'future', 'length_words', \
+        'sentiScore', \
+        #'sentiScore_pos', 'sentiScore_neg', \
+        'label']
 
     def __init__(self):
         self.raw = self._load_data()
@@ -37,13 +41,11 @@ class DataLoader:
             train_test_split(df[self.feature_names], df[self.label_name], \
                             test_size=SPLIT, random_state=SEED)
 
-        train_vectorized_text, test_vectorized_text = vec.spacy_nlp(X_train[self.text_col], X_test[self.text_col])
-        # replace text col with vectorized features
-        X_train[self.text_col] = train_vectorized_text
-        X_test[self.text_col] = test_vectorized_text
-        # convert feature dataframe to numpy and flatten to 1-d array
-        X_train = X_train.to_numpy()
-        X_test = X_test.to_numpy()
+        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col], ngram_range=(1,1))
+
+        X_train =  np.hstack([train_vectorized_text, X_train[self.other_col].to_numpy()])
+        X_test =  np.hstack([test_vectorized_text, X_test[self.other_col].to_numpy()])
+
         self.datasets = X_train, X_test, y_train, y_test
 
     def preprocess(self, df):
