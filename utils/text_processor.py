@@ -7,6 +7,7 @@ class TextProcessor:
     @staticmethod
     def preprocess_pipeline(df, col, stopwords):
         tp = TextProcessor
+        df = df.copy() # to avoid some warnings (SettingWithCopyWarning)
         # is, ASAP !!!!
         df = tp.apply_contractions(df, col)
         # is, AS SOON AS POSSIBLE !!!!
