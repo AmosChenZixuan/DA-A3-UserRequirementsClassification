@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 
 from .text_processor import TextProcessor as tp
 from .vectorize import Vectorizer as vec
@@ -41,7 +42,14 @@ class DataLoader:
             train_test_split(df[self.feature_names], df[self.label_name], \
                             test_size=SPLIT, random_state=SEED)
 
-        train_vectorized_text, test_vectorized_text = vec.spacy_nlp(X_train[self.text_col], X_test[self.text_col])
+        # rescale 'length_words'
+        scalar = StandardScaler()
+        scalar.fit(X_train['length_words'].to_numpy().reshape(-1,1))
+        X_train['length_words'] = scalar.transform(X_train['length_words'].to_numpy().reshape(-1,1))
+        X_test['length_words'] = scalar.transform(X_test['length_words'].to_numpy().reshape(-1,1))
+
+        # text feature vectorization
+        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col],max_df=1.)
 
         X_train =  np.hstack([train_vectorized_text, X_train[self.other_col].to_numpy()])
         X_test =  np.hstack([test_vectorized_text, X_test[self.other_col].to_numpy()])
