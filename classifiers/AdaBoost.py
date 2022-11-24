@@ -9,6 +9,12 @@ class AdaBoost(BaseClassifier):
         return self.__class__.__name__
 
     @BaseClassifier.timer
+    def default_model(self, X, y):
+        clf = AdaBoostClassifier(algorithm = 'SAMME')
+        clf.fit(X, y)
+        self.clf = clf
+
+    @BaseClassifier.timer
     def model_selection(self, X, y):
         self.clf = AdaBoostClassifier(algorithm = 'SAMME')
         base_estimator = [LinearSVC(C=100, dual=False), 

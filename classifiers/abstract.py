@@ -7,6 +7,10 @@ class BaseClassifier(ABC):
         self.clf = None
 
     @abstractmethod
+    def default_model(self, X, y):
+        pass
+
+    @abstractmethod
     def model_selection(self, X, y):
         pass
 

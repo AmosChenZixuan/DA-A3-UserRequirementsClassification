@@ -8,6 +8,12 @@ class RandomForest(BaseClassifier):
         return self.__class__.__name__
 
     @BaseClassifier.timer
+    def default_model(self, X, y):
+        clf = RandomForestClassifier()
+        clf.fit(X, y)
+        self.clf = clf
+
+    @BaseClassifier.timer
     def model_selection(self, X, y):
         self.clf = RandomForestClassifier()
         n_clf = np.linspace(start = 100, stop = 1000, num = 10, dtype=int)
