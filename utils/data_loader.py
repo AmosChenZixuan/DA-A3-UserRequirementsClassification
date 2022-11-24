@@ -49,7 +49,7 @@ class DataLoader:
         X_test['length_words'] = scalar.transform(X_test['length_words'].to_numpy().reshape(-1,1))
 
         # text feature vectorization
-        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col],max_df=1.)
+        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col])
 
         X_train =  np.hstack([train_vectorized_text, X_train[self.other_col].to_numpy()])
         X_test =  np.hstack([test_vectorized_text, X_test[self.other_col].to_numpy()])
