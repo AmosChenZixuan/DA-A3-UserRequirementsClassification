@@ -62,7 +62,7 @@ class DataLoader:
         elif self.vectorizer == 'nlp':
             vectorizer = vec.spacy_nlp
         train_vectorized_text, test_vectorized_text = vectorizer(X_train[self.text_col], X_test[self.text_col], \
-                                                                self.ngram_range)
+                                                                ngram_range=self.ngram_range)
 
         X_train =  np.hstack([train_vectorized_text, X_train[self.other_col].to_numpy()])
         X_test =  np.hstack([test_vectorized_text, X_test[self.other_col].to_numpy()])
