@@ -41,7 +41,7 @@ class DataLoader:
             train_test_split(df[self.feature_names], df[self.label_name], \
                             test_size=SPLIT, random_state=SEED)
 
-        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col], ngram_range=(1,1))
+        train_vectorized_text, test_vectorized_text = vec.spacy_nlp(X_train[self.text_col], X_test[self.text_col])
 
         X_train =  np.hstack([train_vectorized_text, X_train[self.other_col].to_numpy()])
         X_test =  np.hstack([test_vectorized_text, X_test[self.other_col].to_numpy()])
