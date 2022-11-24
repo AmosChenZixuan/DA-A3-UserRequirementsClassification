@@ -23,8 +23,8 @@ class Vectorizer:
     @staticmethod
     def spacy_nlp(train, test, **kargs):
         import spacy
-        # python -m spacy download en_core_web_sm
-        nlp = spacy.load("en_core_web_sm")
+        # python -m spacy download en_core_web_md
+        nlp = spacy.load("en_core_web_md")
 
         features_train = np.array([nlp(text).vector for text in train])
         features_test = np.array([nlp(text).vector for text in test])
