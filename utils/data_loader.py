@@ -20,7 +20,13 @@ class DataLoader:
         #'sentiScore_pos', 'sentiScore_neg', \
         'label']
 
-    def __init__(self):
+    def __init__(self, fields, vectorizer='tfidf', ngram_range=(1,1), stopwords=False):
+        # settings
+        self.FIELDS = fields              # fields to be extracted from json files
+        self.vectorizer = vectorizer      # method for vectorizing text
+        self.ngram_range = ngram_range    # ignored if vectorizer is is not tfidf
+        self.stopwords = stopwords        # keep stopwords or not
+
         self.raw = self._load_data()
         # preprocess
         self.df = None
@@ -43,13 +49,20 @@ class DataLoader:
                             test_size=SPLIT, random_state=SEED)
 
         # rescale 'length_words'
-        scalar = StandardScaler()
-        scalar.fit(X_train['length_words'].to_numpy().reshape(-1,1))
-        X_train['length_words'] = scalar.transform(X_train['length_words'].to_numpy().reshape(-1,1))
-        X_test['length_words'] = scalar.transform(X_test['length_words'].to_numpy().reshape(-1,1))
+        if 'length_words' in self.feature_names:
+            scalar = StandardScaler()
+            scalar.fit(X_train['length_words'].to_numpy().reshape(-1,1))
+            X_train['length_words'] = scalar.transform(X_train['length_words'].to_numpy().reshape(-1,1))
+            X_test['length_words'] = scalar.transform(X_test['length_words'].to_numpy().reshape(-1,1))
 
         # text feature vectorization
-        train_vectorized_text, test_vectorized_text = vec.tfidf(X_train[self.text_col], X_test[self.text_col])
+        vectorizer = None
+        if self.vectorizer == 'tfidf':
+            vectorizer = vec.tfidf
+        elif self.vectorizer == 'nlp':
+            vectorizer = vec.spacy_nlp
+        train_vectorized_text, test_vectorized_text = vectorizer(X_train[self.text_col], X_test[self.text_col], \
+                                                                self.ngram_range)
 
         X_train =  np.hstack([train_vectorized_text, X_train[self.other_col].to_numpy()])
         X_test =  np.hstack([test_vectorized_text, X_test[self.other_col].to_numpy()])
@@ -65,8 +78,7 @@ class DataLoader:
     def feature_preprocess(self, df):
         df = self.drop_duplicates(df)
         df = self.drop_negatives(df)
-        df = tp.preprocess_pipeline(df, self.text_col)
-        # TODO: other features
+        df = tp.preprocess_pipeline(df, self.text_col, self.stopwords)
         return df
 
     def label_preprocess(self, df):

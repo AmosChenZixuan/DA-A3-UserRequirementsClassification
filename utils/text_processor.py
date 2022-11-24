@@ -5,7 +5,7 @@ from nltk.corpus import stopwords
 class TextProcessor:
 
     @staticmethod
-    def preprocess_pipeline(df, col):
+    def preprocess_pipeline(df, col, stopwords):
         tp = TextProcessor
         # is, ASAP !!!!
         df = tp.apply_contractions(df, col)
@@ -16,7 +16,8 @@ class TextProcessor:
         # is  as soon as possible
         df = tp.apply_lemmatization(df, col)
         # be  as soon as possible
-        df = tp.remove_stopwords(df, col)
+        if not stopwords:
+            df = tp.remove_stopwords(df, col)
         #        soon    possible
         df = tp.remove_extra_spaces(df, col)
         # soon possible

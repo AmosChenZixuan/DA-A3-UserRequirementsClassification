@@ -21,7 +21,7 @@ class Vectorizer:
         return features_train, features_test
 
     @staticmethod
-    def spacy_nlp(train, test):
+    def spacy_nlp(train, test, **kargs):
         import spacy
         # python -m spacy download en_core_web_lg
         nlp = spacy.load("en_core_web_lg")
